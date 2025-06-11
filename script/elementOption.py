@@ -1,0 +1,241 @@
+"""
+元素操作模块
+该模块定义了ElementOption类，提供了各种UI元素操作方法，如：
+- 元素定位
+- 点击操作
+- 输入文本
+- 获取屏幕尺寸
+- 等待操作
+等
+"""
+
+import ast
+import time  # 用于延时操作
+import logging  # 用于日志记录
+from datetime import datetime  # 用于日期时间操作
+from pathlib import Path  # 用于路径操作
+from selenium.webdriver.support.wait import WebDriverWait  # 用于显式等待
+from selenium.webdriver.common.keys import Keys  # 用于键盘操作
+
+class ElementOption():
+    """
+    元素操作类
+    提供各种UI元素操作方法，如元素定位、点击、输入文本、等待等
+    
+    主要功能：
+    1. 元素定位：查找单个或多个元素
+    2. 输入操作：向输入框输入文本
+    3. 点击操作：点击元素
+    4. 屏幕操作：获取屏幕尺寸
+    5. 等待操作：强制等待
+    6. 键盘操作：回车键
+    7. 元素判断：判断元素是否存在
+    """
+
+    def __init__(self, device):
+        """
+        初始化元素操作对象
+        :param device: 设备对象，通常是uiautomator2的设备实例
+        """
+        self.device = device  # 设备对象
+
+
+    def loadelement(self, element):
+        """
+        定位单个元素
+        :param element: 元素定位信息，通常是一个字典，包含resourceId、text等定位信息
+        :return: 定位到的元素对象，如果未找到则返回None
+        """
+        try:
+            el_obj = self.device(**element)  # 使用传入的定位信息查找元素
+        except:
+            print("Element load false!!!")  # 元素加载失败
+            logging.error("Element load false!!!")
+        else:
+            return el_obj  # 返回找到的元素对象
+
+    def loadelements(self, element):
+        """
+        定位多个元素
+        :param element: 元素的resourceId
+        :return: 定位到的元素列表
+        """
+        els = self.device(resourceId=element)  # 使用resourceId查找多个元素
+        return els
+
+    def secondary_find_element(self, driver, element):
+        """
+        二级元素定位（在已找到的元素内查找子元素）
+        :param driver: 驱动对象
+        :param element: 元素定位信息
+        :return: 定位到的子元素对象
+        """
+        second_el = driver.find_element(*element)  # 使用解包操作符传递定位信息
+        return second_el
+
+    def enter_(self, element, text):
+        """
+        向元素输入文本
+        :param element: 元素定位信息
+        :param text: 要输入的文本
+        """
+        if not isinstance(text, str):
+            text = str(text)
+        self.loadelement(element).send_keys(text)  # 定位元素并输入文本
+
+
+    def click_(self, element):
+        """
+        点击元素
+        :param element: 元素定位信息或(x, y)坐标元组/列表
+        """
+        # 如果element是(x, y)格式且x、y都是数字，则直接点击坐标
+        if (
+            isinstance(element, (tuple, list)) and 
+            len(element) == 2 and 
+            all(isinstance(coord, (int, float)) for coord in element)
+        ):
+            print(f"Clicking at coordinates: {element}")
+            logging.info(f"Clicking at coordinates: {element}")
+            x, y = element
+            self.device.click(x, y)
+        else:
+            self.loadelement(element).click()
+            
+
+    def double_click(self, element):
+        """
+        双击元素
+        :param element: 元素定位信息
+        """
+        el = self.loadelement(element)  # 定位元素
+        if el:
+            bounds = el.info['bounds']  # 获取元素的边界信息
+            x = (bounds['left'] + bounds['right']) // 2  # 计算元素中心的x坐标
+            y = (bounds['top'] + bounds['bottom']) // 2  # 计算元素中心的y坐标
+            self.device.double_click(x, y)  # 使用uiautomator2的double_click方法双击元素
+
+    def keys_down(self, times=1):
+        """
+        按遥控器下键多次
+        :param times: 按下键的次数，默认为1
+        """
+        for _ in range(times):
+            self.device.press("down")  # 模拟按遥控器下键
+    
+    def keys_up(self, times=1):
+        """
+        按遥控器上键多次
+        :param times: 按上键的次数，默认为1
+        """
+        for _ in range(times):
+            self.device.press("up")  # 模拟按遥控器上键
+
+    def clear_input(self, element):
+        """
+        清空输入框内容
+        :param element: 元素定位信息
+        """
+        el = self.loadelement(element)  # 定位元素
+        if el:
+            el.set_text('')  # 清空输入框内容
+
+
+    def getSize(self):
+        """
+        获取屏幕尺寸
+        :return: 包含屏幕宽高的字典，如{'width': 1080, 'height': 1920}
+        """
+        device_size = self.device.window_size()  # 获取设备窗口大小
+        return device_size
+       
+
+    def wait(self, t):
+        """
+        强制等待
+        :param t: 等待时间（秒）
+        """
+        self.device.wait(t)  # 设备等待指定时间
+
+
+
+    def keys_enter(self, element):
+        """
+        向元素发送回车键
+        :param element: 元素定位信息
+        """
+        self.loadelement(element).send_keys(Keys.ENTER)  # 定位元素并发送回车键
+
+    def is_el_exists(self, element, retries=6, delay=1):
+        """
+        判断元素是否存在，增加重试机制
+        :param element: 元素定位信息
+        :param retries: 重试次数，默认3次
+        :param delay: 每次重试间隔秒数，默认0.5秒
+        :return: 元素存在返回True，不存在返回False
+        """
+        for _ in range(retries):
+            el = self.loadelement(element)
+            if el is not None and el.exists:
+                return True
+            time.sleep(delay)
+        return False
+    
+    def get_element_text(self, element):
+        """
+        获取元素的文本内容
+        :param element: 元素定位信息
+        :return: 元素的文本内容，如果未找到元素则返回None
+        """
+        el = self.loadelement(element)
+        if el:
+            return el.get_text() if hasattr(el, "get_text") else el.text
+        return None
+    
+
+
+
+    
+    
+
+   
+
+    def ai_loadelement(self, image_path, prompt):
+        """
+        仅用AI定位元素（api_key已在ImageLocator内部写死）
+        :param image_path: 当前页面截图路径
+        :param prompt: AI定位描述
+        :return: 定位到的元素对象，如果未找到则返回None
+        """
+        from ai.ai_locator import ImageLocator
+        locator = ImageLocator()
+        ai_result = locator.locate(image_path, prompt)
+        print("AI定位返回结果:", ai_result)
+        logging.info(f"AI定位返回结果: {ai_result}")
+      
+        # 始终以元组的方式输出
+        if not isinstance(ai_result, tuple):
+            return ast.literal_eval(ai_result)
+        return ai_result
+
+    def hybrid_loadelement(self, element):
+        """
+        传统+AI混合定位，优先传统，失败时AI兜底（api_key已在ImageLocator内部写死）
+        :param element: 传统元素定位信息
+        :return: 定位到的元素对象，如果未找到则返回None
+        """
+        el = self.loadelement(element)
+        if el and el.exists:
+            return element
+        print("传统定位失败，尝试AI定位...")
+        logging.info("传统定位失败，尝试AI定位...")
+        # 自动截图
+        image_path = f"ai_fallback_{int(time.time())}.png"
+        self.device.screenshot(image_path)
+        print(f"截图已保存，图片地址: {image_path}")
+        logging.info(f"截图已保存，图片地址: {image_path}")
+        # 用element作为prompt
+        prompt = str(element)
+        print("AI最终定位结果:", self.ai_loadelement(image_path, prompt))
+        logging.info(f"AI最终定位结果: {self.ai_loadelement(image_path, prompt)}")
+        return self.ai_loadelement(image_path, prompt)
