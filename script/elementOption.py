@@ -10,12 +10,17 @@
 """
 
 import ast
+import inspect
 import time  # 用于延时操作
 import logging  # 用于日志记录
 from datetime import datetime  # 用于日期时间操作
 from pathlib import Path  # 用于路径操作
 from selenium.webdriver.support.wait import WebDriverWait  # 用于显式等待
-from selenium.webdriver.common.keys import Keys  # 用于键盘操作
+from selenium.webdriver.common.keys import Keys
+from torch import device
+
+import ai
+from page_obj import element_location  # 用于键盘操作
 
 class ElementOption():
     """
@@ -49,7 +54,7 @@ class ElementOption():
         try:
             el_obj = self.device(**element)  # 使用传入的定位信息查找元素
         except:
-            print("Element load false!!!")  # 元素加载失败
+            
             logging.error("Element load false!!!")
         else:
             return el_obj  # 返回找到的元素对象
@@ -95,7 +100,7 @@ class ElementOption():
             len(element) == 2 and 
             all(isinstance(coord, (int, float)) for coord in element)
         ):
-            print(f"Clicking at coordinates: {element}")
+            
             logging.info(f"Clicking at coordinates: {element}")
             x, y = element
             self.device.click(x, y)
@@ -210,13 +215,32 @@ class ElementOption():
         from ai.ai_locator import ImageLocator
         locator = ImageLocator()
         ai_result = locator.locate(image_path, prompt)
-        print("AI定位返回结果:", ai_result)
+        
         logging.info(f"AI定位返回结果: {ai_result}")
+
+        ai_text=locator.extract_element_text(ai_result, prompt)
+        ai_text = {"text":ai_text}  
+        logging.info(f"AI定位元素文本: {ai_text}")
+        # 提取相对坐标
+        ai_coordinates = locator.extract_relative_coordinates(ai_result)
+        if ai_coordinates is None:
+            logging.error("AI定位未返回有效的相对坐标")
+            return None
+        
+        logging.info(f"AI定位元素相对坐标: {ai_coordinates}")
+
+
+        element_info= self.loadelement(ai_text).info
+        logging.info(f"AI定位元素文本: {element_info}")
+     
+
       
         # 始终以元组的方式输出
-        if not isinstance(ai_result, tuple):
-            return ast.literal_eval(ai_result)
-        return ai_result
+        if not isinstance(ai_coordinates, tuple):
+            return ast.literal_eval(ai_coordinates)
+        
+
+        return ai_coordinates
 
     def hybrid_loadelement(self, element):
         """
@@ -227,15 +251,26 @@ class ElementOption():
         el = self.loadelement(element)
         if el and el.exists:
             return element
-        print("传统定位失败，尝试AI定位...")
-        logging.info("传统定位失败，尝试AI定位...")
+        
+        logging.info("元素" + str(element) + "传统定位失败，尝试AI定位...")
         # 自动截图
-        image_path = f"ai_fallback_{int(time.time())}.png"
-        self.device.screenshot(image_path)
-        print(f"截图已保存，图片地址: {image_path}")
+        # 获取调用该方法的pytest测试用例文件的同级目录
+        # 查找调用栈中第一个pytest测试用例文件（以test_开头或结尾为_test.py）
+        for frame_info in inspect.stack():
+            filename = frame_info.filename
+            if (filename.endswith('.py') and 
+            (Path(filename).name.startswith('test_') or Path(filename).name.endswith('_test.py'))):
+                case_dir = Path(filename).parent
+                break
+        else:
+            # 如果未找到，退回当前文件目录
+            case_dir = Path(__file__).parent
+        images_dir = case_dir / "images"
+        images_dir.mkdir(exist_ok=True)
+        image_path = images_dir / f"ai_fallback_{int(time.time())}.png"
+        self.device.screenshot(str(image_path))
+        
         logging.info(f"截图已保存，图片地址: {image_path}")
         # 用element作为prompt
         prompt = str(element)
-        print("AI最终定位结果:", self.ai_loadelement(image_path, prompt))
-        logging.info(f"AI最终定位结果: {self.ai_loadelement(image_path, prompt)}")
         return self.ai_loadelement(image_path, prompt)

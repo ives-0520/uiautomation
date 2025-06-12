@@ -52,9 +52,7 @@ c:\Users\Administrator\Desktop\APP_UI_AUTO\
 2. 运行AI分析工具，自动提取元素定位、生成页面对象类和测试用例。
 3. 在pytest环境下运行`testCase/testApp/`下的测试用例文件。
 
-## 自动化流程
-
-
+## 自动化流程说明
 
 1. **录制操作**：通过运行`record/record_login.py`开启录制，生成uiautomator2格式的自动化脚本。
 
@@ -82,5 +80,16 @@ c:\Users\Administrator\Desktop\APP_UI_AUTO\
    - **自然语言用例生成**：根据`nature_xxx.py`中的自然语言描述，自动生成异常场景的自然语言测试用例，异常用例的步骤参照正向用例，补充在该文档中，并按照顺序组织起来，提升测试覆盖率和健壮性。
    
    - **pytest用例生成**：根据`nature_xxx.py`中的异常测试用例，自动生成对应的pytest方法，并添加到`testCase/testApp/test_obj_xxx.py`中。所有元素定位和操作方法均调用`page_obj/obj_xxx.py`中的内容，实现异常场景的自动化验证。
+
+## 自然语言测试用例的执行方法
+
+1. 进入AI目录：
+   ```bash
+   cd ai
+   ```
+2. 执行自然语言测试用例：
+   ```bash
+   npx tsx ai_excute_midscene.ts
+   ```
 
 

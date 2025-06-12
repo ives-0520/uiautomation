@@ -1,0 +1,58 @@
+{
+    "v_demo": {
+        "v1": {
+            "traditional": {
+                "description": "v-demo文本元素（APP入口）",
+                "locator": {"text": "v-demo"}
+            }
+        }
+    },
+    "permission_allow_button": {
+        "v1": {
+            "traditional": {
+                "description": "权限允许按钮（系统弹窗‘允许’按钮）",
+                "locator": {"resourceId": "com.android.permissioncontroller:id/permission_allow_button"}
+            }
+        }
+    },
+    "account_login_tv2": {
+        "v1": {
+            "traditional": {
+                "description": "账号登录按钮（首页‘账号登录’按钮）",
+                "locator": {"resourceId": "{packagename}:id/account_login_tv2"}
+            }
+        }
+    },
+    "loginf_et_username": {
+        "v1": {
+            "traditional": {
+                "description": "用户名输入框（登录界面）",
+                "locator": {"resourceId": "{packagename}:id/loginf_et_username"}
+            }
+        }
+    },
+    "et_pwd": {
+        "v1": {
+            "traditional": {
+                "description": "密码输入框（登录界面）",
+                "locator": {"resourceId": "{packagename}:id/et_pwd"}
+            }
+        }
+    },
+    "remember_pwd_cb": {
+        "v1": {
+            "traditional": {
+                "description": "记住密码复选框（登录界面）",
+                "locator": {"resourceId": "{packagename}:id/remember_pwd_cb"}
+            }
+        }
+    },
+    "loginf_tv_login": {
+        "v1": {
+            "traditional": {
+                "description": "登录按钮（登录界面）",
+                "locator": {"resourceId": "{packagename}:id/loginf_tv_login"}
+            }
+        }
+    }
+}

@@ -1,12 +1,13 @@
 import logging
 from operator import contains
+import allure
 import pytest
 import time
 from page_obj.obj_login import obj_login
 
 
 
-
+# @allure.story("登录功能")
 def test_login_email_flow(app_init):
     device = app_init[0]
     app = app_init[1]  # 应用操作对象
