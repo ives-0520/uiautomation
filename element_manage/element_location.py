@@ -22,6 +22,7 @@ class Element_Location:
     loginf_tv_login = {"resourceId": f"{packagename}:id/loginf_tv_login"}
     # 图片控件（头像图片）
     imageView = {"resourceId": f"{packagename}:id/imageView"}
+    
     name_live = {"resourceId": f"{packagename}:id/name", "text": "LIVE"}
     btn_profile = {"xpath": f'//*[@resource-id="{packagename}:id/btn_profile"]/android.widget.LinearLayout[1]'}
     recycler_view_item = {"xpath": f'//*[@resource-id="{packagename}:id/recycler_view"]/android.widget.LinearLayout[1]'}

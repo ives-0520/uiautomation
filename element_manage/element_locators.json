@@ -52,6 +52,29 @@
             "traditional": {
                 "description": "登录按钮（登录界面）",
                 "locator": {"resourceId": "{packagename}:id/loginf_tv_login"}
+            },
+            "ai": {
+                "description": "登录按钮（登录界面）",
+                "locator": [0.576,0.708],
+                "text":"login",
+                "element_type": "按钮",
+                "confidence": 0.95,
+                "relation": "与用户名输入框、密码输入框、记住密码复选框同属登录界面"
+
+            }
+        },
+        "v2": {
+            "traditional": {
+                "description": "登录按钮（登录界面）",
+                "locator": {"resourceId": "{packagename}:id/loginf_tv_login"}
+            }
+        }
+    },
+    "imageView": {
+        "v1": {
+            "traditional": {
+                "description": "头像图片控件",
+                "locator": {"resourceId": "{packagename}:id/imageView"}
             }
         }
     }

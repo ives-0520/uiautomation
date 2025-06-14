@@ -6,9 +6,9 @@
 import sys
 import pytest  # 用于测试框架
 import subprocess  # 用于执行系统命令
-from script.adbOperation import ADBOperation  # 导入ADB操作类
+from device.adbOperation import ADBOperation  # 导入ADB操作类
 from config.read_config import readConf  # 导入配置读取类
-from page_obj import device_init  # 导入设备初始化模块
+from device import device_init  # 导入设备初始化模块
 import os  # 用于文件和目录操作
 import logging
 import allure  # 导入allure
@@ -16,6 +16,8 @@ import allure  # 导入allure
 log_process = None  # 全局变量，用于保存adb logcat子进程对象
 deviceInfo = readConf().get_device_info()  # 读取设备配置信息
 deviceName = deviceInfo["deviceName"]  # 获取设备名称
+
+
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -49,7 +51,6 @@ def pytest_runtest_setup(item):
     logging.info(f"Started adb logcat for test case: {item.name}, log path: {log_file}")
     # 配置pytest日志文件handler（追加写入模式）
     logger = logging.getLogger()
-    # 移除旧的文件handler，避免重复写入
     for h in logger.handlers[:]:
         if isinstance(h, logging.FileHandler):
             logger.removeHandler(h)
@@ -88,16 +89,46 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     rep = outcome.get_result()
     if rep.when == "call" and rep.failed:
-        # 获取driver对象
-        driver = None
-        if "app_init" in item.fixturenames:
-            driver = item.funcargs["app_init"][0]
+        driver = globals().get("u2_driver")
+        screenshot_success = False
+        tmp_path = None
         if driver:
             try:
-                png = driver.screenshot_as_png
-                allure.attach(png, name="screenshot", attachment_type=allure.attachment_type.PNG)
+                import tempfile
+                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
+                    tmp_path = tmpfile.name
+                success = driver.screenshot(tmp_path)
+                if success and os.path.exists(tmp_path):
+                    with open(tmp_path, 'rb') as f:
+                        allure.attach(f.read(), name=f"screenshot_{item.name}", attachment_type=allure.attachment_type.PNG)
+                    os.remove(tmp_path)
+                    screenshot_success = True
+                else:
+                    logging.warning("截图失败: driver.screenshot未生成图片")
             except Exception as e:
                 logging.warning(f"截图失败: {e}")
+        # adb截图兜底
+        if not screenshot_success:
+            try:
+                import tempfile
+                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
+                    tmp_path = tmpfile.name
+                adb_path = f"/sdcard/pytest_fail_{item.name}.png"
+                # 截图到设备
+                subprocess.run(["adb", "-s", deviceName, "shell", "screencap", "-p", adb_path], check=True)
+                # 拉取到本地
+                subprocess.run(["adb", "-s", deviceName, "pull", adb_path, tmp_path], check=True)
+                # 删除设备上的截图
+                subprocess.run(["adb", "-s", deviceName, "shell", "rm", adb_path], check=True)
+                if os.path.exists(tmp_path):
+                    with open(tmp_path, 'rb') as f:
+                        allure.attach(f.read(), name=f"adb_screenshot_{item.name}", attachment_type=allure.attachment_type.PNG)
+                    os.remove(tmp_path)
+                else:
+                    logging.warning("adb截图失败: 未生成图片")
+            except Exception as e:
+                logging.warning(f"adb截图失败: {e}")
+   
 
 @pytest.fixture
 def app_init():
@@ -110,8 +141,15 @@ def app_init():
     r = readConf()  # 创建配置读取对象
     adb = ADBOperation()  # 创建ADB操作对象
     adb.connect_device(deviceName)  # 连接设备
+    global u2_driver
     driver = device_init.d  # 获取设备对象
-    app = device_init.appOpt(driver)  # 创建应用操作对象
+    u2_driver = driver      # 赋值全局driver
+    # 新增：初始化manager
+    from element_manage.element_locator_manager import ElementLocatorManager
+    locator_path = os.path.join(os.path.dirname(__file__), '../../element_manage/element_locators.json')
+    packageName = device_init.packageName
+    manager = ElementLocatorManager(locator_path, packageName, 'v1')
+    app = device_init.appOpt(driver, manager)  # 创建应用操作对象
     deviceName = device_init.deviceName  # 获取设备名称
     app_packageName = device_init.packageName  # 获取应用包名
     # 清除应用数据
@@ -119,7 +157,7 @@ def app_init():
 
 
     # 返回设备对象、应用操作对象和配置对象
-    yield (driver, app, r)
+    yield (driver, app, r,manager)
 
     # 测试完成后清理工作
     # 清除应用数据
@@ -150,8 +188,8 @@ def pytest_sessionfinish(session, exitstatus):
     except Exception as e:
         print(f"Allure 报告生成失败: {e}")
     # 自动在测试会话结束后打开 Allure 报告（仅限本地环境）
-    try:
-        os.system("allure open allure-report")
-    except Exception as e:
-        print(f"自动打开 Allure 报告失败: {e}")
+    # try:
+    #     os.system("allure open allure-report")
+    # except Exception as e:
+    #     print(f"自动打开 Allure 报告失败: {e}")
 

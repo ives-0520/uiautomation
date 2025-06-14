@@ -18,9 +18,8 @@ from pathlib import Path  # 用于路径操作
 from selenium.webdriver.support.wait import WebDriverWait  # 用于显式等待
 from selenium.webdriver.common.keys import Keys
 from torch import device
-
+import re  # 用于正则表达式匹配
 import ai
-from page_obj import element_location  # 用于键盘操作
 
 class ElementOption():
     """
@@ -48,14 +47,15 @@ class ElementOption():
     def loadelement(self, element):
         """
         定位单个元素
-        :param element: 元素定位信息，通常是一个字典，包含resourceId、text等定位信息
-        :return: 定位到的元素对象，如果未找到则返回None
+        :param element: 元素定位信息，通常是一个字典，包含resourceId、text等定位信息，
+                        或者是"(x,y)"格式的字符串
+        :return: 定位到的元素对象，如果未找到则返回None；
         """
+        
         try:
             el_obj = self.device(**element)  # 使用传入的定位信息查找元素
-        except:
-            
-            logging.error("Element load false!!!")
+        except Exception as e:
+            logging.error(f"Element load false!!! {e}")
         else:
             return el_obj  # 返回找到的元素对象
 
@@ -213,10 +213,18 @@ class ElementOption():
         :return: 定位到的元素对象，如果未找到则返回None
         """
         from ai.ai_locator import ImageLocator
+        import json
+       
         locator = ImageLocator()
         ai_result = locator.locate(image_path, prompt)
-        
         logging.info(f"AI定位返回结果: {ai_result}")
+        # 保存AI返回结果到文件
+        result_file = Path(image_path).with_suffix('.ai_result.json')
+        with open(result_file, 'w', encoding='utf-8') as f:
+            json.dump(ai_result, f, ensure_ascii=False, indent=2)
+        logging.info(f"AI定位结果已保存到: {result_file}")
+        
+        
 
         ai_text=locator.extract_element_text(ai_result, prompt)
         ai_text = {"text":ai_text}  
@@ -231,7 +239,7 @@ class ElementOption():
 
 
         element_info= self.loadelement(ai_text).info
-        logging.info(f"AI定位元素文本: {element_info}")
+        logging.info(f"AI定位元素信息: {element_info}")
      
 
       
@@ -248,6 +256,9 @@ class ElementOption():
         :param element: 传统元素定位信息
         :return: 定位到的元素对象，如果未找到则返回None
         """
+        if isinstance(element, (list)):
+            # logging.warning("传入的元素是list类型，转换为元组")
+            return tuple(element)
         el = self.loadelement(element)
         if el and el.exists:
             return element

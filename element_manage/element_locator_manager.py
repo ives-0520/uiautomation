@@ -1,10 +1,8 @@
 import json
 import os
 from typing import Dict, Any, Optional
-from ElementLocatorSchema import ElementLocator
-from config.read_config import readConf
-r = readConf()
-packagename = r.get_device_info()['appPackage']
+from element_manage.ElementLocatorSchema import ElementLocator
+
 
 
 def get_highest_version(versions):
@@ -26,19 +24,25 @@ class ElementLocatorManager:
             return None
         # 优先查找指定版本
         version_dict = element.get(self.version)
+        used_version = self.version
         if not version_dict:
             # 没有指定版本，取最高版本
             highest_version = get_highest_version(element.keys())
             version_dict = element[highest_version]
-        # 优先traditional
-        if 'traditional' in version_dict:
-            locator_data = version_dict['traditional']
-            locator_data = self._replace_packagename(locator_data)
-            return ElementLocator.from_dict(locator_data)
-        # 没有traditional，尝试ai
+            used_version = highest_version
+        # 优先ai
         if 'ai' in version_dict:
             locator_data = version_dict['ai']
             locator_data = self._replace_packagename(locator_data)
+            locator_data['version'] = used_version
+            locator_data['type'] = 'ai'
+            return ElementLocator.from_dict(locator_data)
+        # 没有ai，尝试traditional
+        if 'traditional' in version_dict:
+            locator_data = version_dict['traditional']
+            locator_data = self._replace_packagename(locator_data)
+            locator_data['version'] = used_version
+            locator_data['type'] = 'traditional'
             return ElementLocator.from_dict(locator_data)
         return None
 
@@ -56,14 +60,12 @@ class ElementLocatorManager:
         return None
 
     def _replace_packagename(self, locator_data):
-        # 替换locator中的{packagename}为实际包名，并补充version字段
+        # 替换locator中的{packagename}为实际包名
         locator = locator_data.get('locator', {})
         locator_str = json.dumps(locator)
         locator_str = locator_str.replace('{packagename}', self.packagename)
         locator_data = locator_data.copy()
         locator_data['locator'] = json.loads(locator_str)
-        # 补充version字段
-        locator_data['version'] = self.version
         return locator_data
 
     def _call_ai_relocate(self, name: str):
