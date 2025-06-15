@@ -15,6 +15,7 @@ import time  # 用于延时操作
 import logging  # 用于日志记录
 from datetime import datetime  # 用于日期时间操作
 from pathlib import Path  # 用于路径操作
+from py import log
 from selenium.webdriver.support.wait import WebDriverWait  # 用于显式等待
 from selenium.webdriver.common.keys import Keys
 from torch import device
@@ -44,20 +45,24 @@ class ElementOption():
         self.device = device  # 设备对象
 
 
-    def loadelement(self, element):
+    def loadelement(self, element, retries=6, delay=1):
         """
-        定位单个元素
+        定位单个元素，带重试机制
         :param element: 元素定位信息，通常是一个字典，包含resourceId、text等定位信息，
                         或者是"(x,y)"格式的字符串
+        :param retries: 重试次数，默认3次
+        :param delay: 每次重试间隔秒数，默认0.5秒
         :return: 定位到的元素对象，如果未找到则返回None；
         """
-        
-        try:
-            el_obj = self.device(**element)  # 使用传入的定位信息查找元素
-        except Exception as e:
-            logging.error(f"Element load false!!! {e}")
-        else:
-            return el_obj  # 返回找到的元素对象
+        for attempt in range(retries):
+            try:
+                el_obj = self.device(**element)  # 使用传入的定位信息查找元素
+                # logging.info(f"Element loaded successfully: {el_obj.info}")
+                return el_obj  # 返回找到的元素对象
+            except Exception as e:
+                logging.error(f"Element load false (attempt {attempt+1}/{retries}): {e}")
+                time.sleep(delay)
+        return None
 
     def loadelements(self, element):
         """
@@ -101,9 +106,10 @@ class ElementOption():
             all(isinstance(coord, (int, float)) for coord in element)
         ):
             
-            logging.info(f"Clicking at coordinates: {element}")
+           
             x, y = element
             self.device.click(x, y)
+            logging.info(f"Clicking at coordinates: {element}")
         else:
             self.loadelement(element).click()
             
@@ -175,11 +181,11 @@ class ElementOption():
         """
         判断元素是否存在，增加重试机制
         :param element: 元素定位信息
-        :param retries: 重试次数，默认3次
-        :param delay: 每次重试间隔秒数，默认0.5秒
+        :param retries: 重试次数，默认6次
+        :param delay: 每次重试间隔秒数，默认1秒
         :return: 元素存在返回True，不存在返回False
         """
-        for _ in range(retries):
+        for attempt in range(retries):
             el = self.loadelement(element)
             if el is not None and el.exists:
                 return True
@@ -207,7 +213,7 @@ class ElementOption():
 
     def ai_loadelement(self, image_path, prompt):
         """
-        仅用AI定位元素（api_key已在ImageLocator内部写死）
+        仅用AI定位元素
         :param image_path: 当前页面截图路径
         :param prompt: AI定位描述
         :return: 定位到的元素对象，如果未找到则返回None
@@ -217,11 +223,14 @@ class ElementOption():
        
         locator = ImageLocator()
         ai_result = locator.locate(image_path, prompt)
+        ai_result_json = locator.format_ai_result(ai_result)
         logging.info(f"AI定位返回结果: {ai_result}")
+
+
         # 保存AI返回结果到文件
         result_file = Path(image_path).with_suffix('.ai_result.json')
         with open(result_file, 'w', encoding='utf-8') as f:
-            json.dump(ai_result, f, ensure_ascii=False, indent=2)
+            json.dump(ai_result_json, f, ensure_ascii=False, indent=2)
         logging.info(f"AI定位结果已保存到: {result_file}")
         
         
@@ -238,8 +247,8 @@ class ElementOption():
         logging.info(f"AI定位元素相对坐标: {ai_coordinates}")
 
 
-        element_info= self.loadelement(ai_text).info
-        logging.info(f"AI定位元素信息: {element_info}")
+        # element_info= self.loadelement(ai_text).info
+        # logging.info(f"AI定位元素信息: {element_info}")
      
 
       
@@ -256,9 +265,11 @@ class ElementOption():
         :param element: 传统元素定位信息
         :return: 定位到的元素对象，如果未找到则返回None
         """
+        
         if isinstance(element, (list)):
-            # logging.warning("传入的元素是list类型，转换为元组")
+            logging.warning("传入的元素是list类型，转换为元组")
             return tuple(element)
+
         el = self.loadelement(element)
         if el and el.exists:
             return element

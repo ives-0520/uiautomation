@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from typing import Dict, Any, Optional
 from element_manage.ElementLocatorSchema import ElementLocator
@@ -43,6 +44,7 @@ class ElementLocatorManager:
             locator_data = self._replace_packagename(locator_data)
             locator_data['version'] = used_version
             locator_data['type'] = 'traditional'
+            # logging.info(ElementLocator.from_dict(locator_data).locator)
             return ElementLocator.from_dict(locator_data)
         return None
 
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     version = 'v1'
     locator_path = os.path.join(os.path.dirname(__file__), 'element_locators.json')
     manager = ElementLocatorManager(locator_path, packagename, version)
-    element_name = 'loginf_et_username'
+    element_name = 'loginf_tv_login'
     locator = manager.get_locator(element_name)
     if locator:
         print(f"传统/AI定位: {locator.locator}")

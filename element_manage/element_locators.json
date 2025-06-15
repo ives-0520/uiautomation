@@ -66,7 +66,7 @@
         "v2": {
             "traditional": {
                 "description": "登录按钮（登录界面）",
-                "locator": {"resourceId": "{packagename}:id/loginf_tv_login"}
+                "locator": {"resourceId": "{packagename}:id/loginf_tv_logi"}
             }
         }
     },

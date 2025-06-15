@@ -3,7 +3,7 @@
 该模块定义了各种pytest夹具(fixtures)，用于测试前的准备工作和测试后的清理工作。
 包括应用初始化、设备连接、数据准备等功能。
 """
-import sys
+
 import pytest  # 用于测试框架
 import subprocess  # 用于执行系统命令
 from device.adbOperation import ADBOperation  # 导入ADB操作类
@@ -54,7 +54,7 @@ def pytest_runtest_setup(item):
     for h in logger.handlers[:]:
         if isinstance(h, logging.FileHandler):
             logger.removeHandler(h)
-    file_handler = logging.FileHandler(pylog_file, mode='a', encoding="utf-8")
+    file_handler = logging.FileHandler(pylog_file, mode='w', encoding="utf-8")
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", "%Y-%m-%d %H:%M:%S")
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
@@ -89,26 +89,6 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     rep = outcome.get_result()
     if rep.when == "call" and rep.failed:
-        driver = globals().get("u2_driver")
-        screenshot_success = False
-        tmp_path = None
-        if driver:
-            try:
-                import tempfile
-                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
-                    tmp_path = tmpfile.name
-                success = driver.screenshot(tmp_path)
-                if success and os.path.exists(tmp_path):
-                    with open(tmp_path, 'rb') as f:
-                        allure.attach(f.read(), name=f"screenshot_{item.name}", attachment_type=allure.attachment_type.PNG)
-                    os.remove(tmp_path)
-                    screenshot_success = True
-                else:
-                    logging.warning("截图失败: driver.screenshot未生成图片")
-            except Exception as e:
-                logging.warning(f"截图失败: {e}")
-        # adb截图兜底
-        if not screenshot_success:
             try:
                 import tempfile
                 with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
@@ -148,7 +128,7 @@ def app_init():
     from element_manage.element_locator_manager import ElementLocatorManager
     locator_path = os.path.join(os.path.dirname(__file__), '../../element_manage/element_locators.json')
     packageName = device_init.packageName
-    manager = ElementLocatorManager(locator_path, packageName, 'v1')
+    manager = ElementLocatorManager(locator_path, packageName, 'v2')
     app = device_init.appOpt(driver, manager)  # 创建应用操作对象
     deviceName = device_init.deviceName  # 获取设备名称
     app_packageName = device_init.packageName  # 获取应用包名
@@ -172,10 +152,10 @@ def pytest_sessionfinish(session, exitstatus):
     """
     import subprocess
     import shutil
-    result_dir = os.path.abspath("allure-results")
+    result_dir = os.path.abspath("report/allure-results")
     logging.info(f"Allure 结果目录: {result_dir}")
 
-    report_dir = os.path.abspath("allure-report")
+    report_dir = os.path.abspath("report/allure-report")
     allure_cmd = shutil.which("allure")
     if not allure_cmd:
         print("未找到 allure 命令，请检查环境变量或手动生成报告。")

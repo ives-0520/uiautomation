@@ -52,7 +52,7 @@ class ImageLocator:
                 }
             ],
         )
-        logging.info(f"AI定位返回信息: {response}")
+        # logging.info(f"AI定位返回信息: {response}")
         return response.choices[0].message.content
     
 
@@ -86,7 +86,80 @@ class ImageLocator:
         match = re.search(pattern, ai_response)
         if match:
             return match.group(1).strip()
-        return ""    
+        return ""   
+
+    def extract_element_type(self, ai_response: str) -> str:
+        """
+        从AI返回的文本中提取元素类型。
+
+        :param ai_response: AI返回的文本内容
+        :return: 元素类型，未找到则返回空字符串
+        """
+        pattern = r"3\.\s*元素类型[：:]\s*(.*)"
+        match = re.search(pattern, ai_response)
+        if match:
+            return match.group(1).strip()
+        return ""
+
+    def extract_confidence(self, ai_response: str) -> float:
+        """
+        从AI返回的文本中提取置信度。
+
+        :param ai_response: AI返回的文本内容
+        :return: 置信度，未找到则返回None
+        """
+        pattern = r"4\.\s*模型对识别结果的置信度[：:]\s*([0-9]*\.?[0-9]+)"
+        match = re.search(pattern, ai_response)
+        if match:
+            return float(match.group(1))
+        return None
+
+    def extract_relationship(self, ai_response: str) -> str:
+        """
+        从AI返回的文本中提取元素与其他UI组件的关系。
+
+        :param ai_response: AI返回的文本内容
+        :return: 元素与其他UI组件的关系，未找到则返回空字符串
+        """
+        pattern = r"5\.\s*元素与其他UI组件的关系[：:]\s*(.*)"
+        match = re.search(pattern, ai_response)
+        if match:
+            return match.group(1).strip()
+        return ""
+
+    def extract_description(self, ai_response: str) -> str:
+        """
+        从AI返回的文本中提取元素描述。
+
+        :param ai_response: AI返回的文本内容
+        :return: 元素描述，未找到则返回空字符串
+        """
+        pattern = r"6\.\s*元素描述[：:]\s*(.*)"
+        match = re.search(pattern, ai_response)
+        if match:
+            return match.group(1).strip()
+        return ""
+    
+
+
+
+    def format_ai_result(self, ai_response: str) -> dict:
+        """
+        将AI返回的结果组织为指定的字典格式。
+
+        :param ai_response: AI返回的文本内容
+        :return: 格式化后的字典
+        """
+        return {
+            "ai": {
+                "description": self.extract_description(ai_response),
+                "locator": list(self.extract_relative_coordinates(ai_response)) if self.extract_relative_coordinates(ai_response) else [],
+                "text": self.extract_element_text(ai_response, ""),
+                "element_type": self.extract_element_type(ai_response),
+                "confidence": self.extract_confidence(ai_response),
+                "relation": self.extract_relationship(ai_response)
+            }
+        }
 
 
 # 使用示例

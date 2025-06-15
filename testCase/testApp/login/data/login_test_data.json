@@ -1,0 +1,14 @@
+{
+  "valid_user": {
+    "username": "0609@ipwangxin.cn",
+    "password": "123456"
+  },
+  "invalid_user": {
+    "username": "wrong@ipwangxin.cn",
+    "password": "wrongpwd"
+  },
+  "empty_user": {
+    "username": "",
+    "password": ""
+  }
+}
