@@ -1,0 +1,17 @@
+{
+  "loginf_tv_login": {
+    "v2": {
+      "ai": {
+        "description": "用于提交登录信息的按钮，点击后执行登录操作",
+        "locator": [
+          0.577,
+          0.705
+        ],
+        "text": "Login",
+        "element_type": "按钮",
+        "confidence": 0.9,
+        "relation": "位于密码输入框下方，“Remember password”选项右侧，“By logging in, you agree with the Terms & Policy”文字上方，与输入框、选项等UI组件相邻"
+      }
+    }
+  }
+}

@@ -1,2 +1,2 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","28588","test_login_email_flow","testCase.testApp.login","Sun Jun 15 22:23:39 CST 2025","passed","Sun Jun 15 22:24:08 CST 2025","","test_obj_login","",""
+"","31715","test_login_email_flow","testCase.testApp.login","Mon Jun 16 01:23:35 CST 2025","passed","Mon Jun 16 01:24:06 CST 2025","","test_obj_login","",""

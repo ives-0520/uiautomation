@@ -21,7 +21,8 @@ class obj_login(ElementOption):
         self.enter_(self.manager.get_locator("loginf_et_username").locator, username)
         self.click_(self.manager.get_locator("et_pwd").locator)
         self.enter_(self.manager.get_locator("et_pwd").locator, password)
+        self.click_(self.manager.get_locator("remember_pwd_cb").locator)
         
        
-        self.click_(self.hybrid_loadelement(self.manager.get_locator("loginf_tv_login").locator))
+        self.click_(self.hybrid_loadelement(self.manager.get_locator("loginf_tv_login")))
         

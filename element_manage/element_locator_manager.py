@@ -35,15 +35,19 @@ class ElementLocatorManager:
         if 'ai' in version_dict:
             locator_data = version_dict['ai']
             locator_data = self._replace_packagename(locator_data)
-            locator_data['version'] = used_version
+            locator_data['used_version'] = used_version
+            locator_data['version'] = self.version
             locator_data['type'] = 'ai'
+            locator_data['name'] = name
             return ElementLocator.from_dict(locator_data)
         # 没有ai，尝试traditional
         if 'traditional' in version_dict:
             locator_data = version_dict['traditional']
             locator_data = self._replace_packagename(locator_data)
-            locator_data['version'] = used_version
+            locator_data['used_version'] = used_version
+            locator_data['find_version'] = self.version
             locator_data['type'] = 'traditional'
+            locator_data['name'] = name
             # logging.info(ElementLocator.from_dict(locator_data).locator)
             return ElementLocator.from_dict(locator_data)
         return None
@@ -60,6 +64,8 @@ class ElementLocatorManager:
             self._save()
             return ElementLocator.from_dict(ai_locator)
         return None
+
+    
 
     def _replace_packagename(self, locator_data):
         # 替换locator中的{packagename}为实际包名

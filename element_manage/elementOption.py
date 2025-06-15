@@ -11,6 +11,7 @@
 
 import ast
 import inspect
+from os import name
 import time  # 用于延时操作
 import logging  # 用于日志记录
 from datetime import datetime  # 用于日期时间操作
@@ -211,7 +212,7 @@ class ElementOption():
 
    
 
-    def ai_loadelement(self, image_path, prompt):
+    def ai_loadelement(self, image_path, prompt, name='', version='1.0'):
         """
         仅用AI定位元素
         :param image_path: 当前页面截图路径
@@ -223,8 +224,10 @@ class ElementOption():
        
         locator = ImageLocator()
         ai_result = locator.locate(image_path, prompt)
-        ai_result_json = locator.format_ai_result(ai_result)
         logging.info(f"AI定位返回结果: {ai_result}")
+        ai_result_json = locator.format_ai_result(ai_result)
+        
+        ai_result_json=self.assemble_element_data(ai_result_json, name, version)
 
 
         # 保存AI返回结果到文件
@@ -259,13 +262,15 @@ class ElementOption():
 
         return ai_coordinates
 
-    def hybrid_loadelement(self, element):
+    def hybrid_loadelement(self, element_option):
         """
         传统+AI混合定位，优先传统，失败时AI兜底（api_key已在ImageLocator内部写死）
         :param element: 传统元素定位信息
         :return: 定位到的元素对象，如果未找到则返回None
         """
-        
+        element = element_option.locator
+        name = element_option.name
+        version = element_option.find_version 
         if isinstance(element, (list)):
             logging.warning("传入的元素是list类型，转换为元组")
             return tuple(element)
@@ -295,4 +300,19 @@ class ElementOption():
         logging.info(f"截图已保存，图片地址: {image_path}")
         # 用element作为prompt
         prompt = str(element)
-        return self.ai_loadelement(image_path, prompt)
+        return self.ai_loadelement(image_path, prompt,name, version)
+    
+    def assemble_element_data(self,ai_data, name, version):
+        """
+        组装元素数据为指定格式
+        :param ai_data: AI元素数据字典，格式如{"ai": {...}}
+        :param name: 元素名称字符串
+        :param version: 版本号字符串
+        :return: 组装后的字典
+        """
+        return {
+            name: {
+                version: ai_data
+            }
+        }
+

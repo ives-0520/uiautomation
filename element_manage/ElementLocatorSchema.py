@@ -1,8 +1,9 @@
+from os import name
 from typing import Optional, Dict, Any
 
 class ElementLocator:
     # 元素定位数据结构类
-    def __init__(self, description: str, locator: Dict[str, Any], version: str, locator_type: str = 'traditional', ai_fields: Optional[Dict[str, Any]] = None):
+    def __init__(self, description: str, locator: Dict[str, Any], used_version: str, locator_type: str = 'traditional', ai_fields: Optional[Dict[str, Any]] = None, name: str = '', find_version: str = ''):
         """
         初始化元素定位对象
         :param description: 元素描述
@@ -13,9 +14,11 @@ class ElementLocator:
         """
         self.description = description  # 元素描述
         self.locator = locator          # 元素定位方式（字典）
-        self.version = version          # 元素定位版本
+        self.used_version = used_version          # 元素定位版本
         self.locator_type = locator_type  # 定位类型
         self.ai_fields = ai_fields or {}  # AI定位扩展字段
+        self.name = name
+        self.find_version = find_version
 
     def to_dict(self):
         """
@@ -39,7 +42,9 @@ class ElementLocator:
         return ElementLocator(
             description=data.get('description', ''),
             locator=data.get('locator', {}),
-            version=data.get('version', ''),
+            used_version=data.get('used_version', ''),
+            find_version=data.get('find_version', ''),
             locator_type=data.get('type', 'traditional'),
-            ai_fields=data.get('ai_fields', {})
+            ai_fields=data.get('ai_fields', {}),
+            name = data.get('name', '')
         )

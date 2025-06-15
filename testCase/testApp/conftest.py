@@ -12,13 +12,55 @@ from device import device_init  # 导入设备初始化模块
 import os  # 用于文件和目录操作
 import logging
 import allure  # 导入allure
+import json  # 新增
+import glob  # 新增
 
 log_process = None  # 全局变量，用于保存adb logcat子进程对象
 deviceInfo = readConf().get_device_info()  # 读取设备配置信息
 deviceName = deviceInfo["deviceName"]  # 获取设备名称
 
-
-
+def update_element_locators_with_ai_result(item=None):
+    """
+    检查当前用例目录下是否有ai_result.json类文件，若有则合并到element_locators.json。
+    用于自动将AI识别的元素定位信息合并到主元素库，便于后续用例复用。
+    """
+    # 获取当前测试用例文件所在目录（如果item传入则用item.fspath，否则用conftest.py目录）
+    if item is not None and hasattr(item, 'fspath'):
+        case_dir = os.path.dirname(item.fspath)
+    else:
+        case_dir = os.path.dirname(__file__)
+    # 修正：主元素库json路径，向上三级到APP_UI_AUTO根目录再拼接element_manage/element_locators.json
+    element_locators_path = os.path.abspath(os.path.join(case_dir, '../../../element_manage/element_locators.json'))
+    # 查找images目录下所有ai_fallback_*.ai_result.json文件（AI识别结果文件）
+    ai_result_files = glob.glob(os.path.join(case_dir, 'images', 'ai_fallback_*.ai_result.json'))
+    if not ai_result_files:
+        # 如果没有AI识别结果文件，直接返回
+        return
+    # 读取主元素库文件
+    with open(element_locators_path, 'r', encoding='utf-8') as f:
+        element_locators = json.load(f)
+    updated = False  # 标记是否有更新
+    # 遍历所有AI识别结果文件
+    for ai_file in ai_result_files:
+        with open(ai_file, 'r', encoding='utf-8') as f:
+            ai_data = json.load(f)
+        # 遍历AI识别结果中的每个元素
+        for elem_key, elem_val in ai_data.items():
+            for version, version_val in elem_val.items():
+                # 如果主元素库中没有该元素，则新建
+                if elem_key not in element_locators:
+                    element_locators[elem_key] = {}
+                # 如果主元素库中没有该版本，则新建
+                if version not in element_locators[elem_key]:
+                    element_locators[elem_key][version] = {}
+                # 如果AI识别结果中有'ai'字段，则合并到主元素库
+                if 'ai' in version_val:
+                    element_locators[elem_key][version]['ai'] = version_val['ai']
+                    updated = True
+    # 如果有更新，则写回主元素库文件
+    if updated:
+        with open(element_locators_path, 'w', encoding='utf-8') as f:
+            json.dump(element_locators, f, ensure_ascii=False, indent=4)
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_setup(item):
@@ -82,6 +124,11 @@ def pytest_runtest_teardown(item, nextitem):
         if os.path.exists(log_file):
             with open(log_file, "rb") as f:
                 allure.attach(f.read(), name=f"logcat_{item.name}", attachment_type=allure.attachment_type.TEXT)
+    # 新增：用例结束后自动合并ai_result到element_locators
+    try:
+        update_element_locators_with_ai_result(item)
+    except Exception as e:
+        logging.warning(f"自动合并AI定位信息失败: {e}")
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
