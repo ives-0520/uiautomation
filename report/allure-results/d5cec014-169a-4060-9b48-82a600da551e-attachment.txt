@@ -1,0 +1,11 @@
+INFO     root:conftest.py:93 Started adb logcat for test case: test_recharge_flow[0609@ipwangxin.cn-123456-1158472753844023], log path: c:\Users\Administrator\Desktop\APP_UI_AUTO\testCase\testApp\recharge\logs\device_logs\test_recharge_flow[0609@ipwangxin.cn-123456-1158472753844023].log
+INFO     root:adbOperation.py:40 Successfully connected to the device!
+WARNING  root:elementOption.py:275 传入的元素是list类型，转换为元组
+INFO     root:elementOption.py:113 Clicking at coordinates: (0.576, 0.705)
+ERROR    root:elementOption.py:64 Element load false (attempt 1/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 2/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 3/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 4/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 5/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 6/6): xpath is not allowed.
+INFO     root:conftest.py:119 Stopped adb logcat for test case: test_recharge_flow[0609@ipwangxin.cn-123456-1158472753844023]

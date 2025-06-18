@@ -1,3 +1,5 @@
+#旧的元素组织形式，现已废弃
+
 from config.read_config import readConf
 
 r = readConf()

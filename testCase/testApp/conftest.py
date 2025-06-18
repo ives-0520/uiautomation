@@ -216,7 +216,7 @@ def pytest_sessionfinish(session, exitstatus):
         print(f"Allure 报告生成失败: {e}")
     # 自动在测试会话结束后打开 Allure 报告（仅限本地环境）
     # try:
-    #     os.system("allure open allure-report")
+    #     os.system("allure open report\allure-report")
     # except Exception as e:
     #     print(f"自动打开 Allure 报告失败: {e}")
 

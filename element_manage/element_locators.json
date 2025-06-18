@@ -83,7 +83,7 @@
             "traditional": {
                 "description": "登录按钮（登录界面）",
                 "locator": {
-                    "resourceId": "{packagename}:id/loginf_tv_logi"
+                    "resourceId": "{packagename}:id/loginf_tv_login"
                 }
             },
             "ai": {
@@ -105,6 +105,36 @@
                 "description": "头像图片控件",
                 "locator": {
                     "resourceId": "{packagename}:id/imageView"
+                }
+            }
+        }
+    },
+    "recharge_recycler_view": {
+        "v1": {
+            "traditional": {
+                "description": "充值入口",
+                "locator": {
+                    "xpath": "//*[@resource-id=\"{packagename}:id/recycler_view\"]/android.widget.LinearLayout[1]"
+                }
+            }
+        }
+    },
+    "et_recharge_code": {
+        "v1": {
+            "traditional": {
+                "description": "充值码输入框（充值页面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/et_recharge_code"
+                }
+            }
+        }
+    },
+    "recharge_code_confirm": {
+        "v1": {
+            "traditional": {
+                "description": "充值确认按钮（充值页面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/recharge_code_confirm"
                 }
             }
         }

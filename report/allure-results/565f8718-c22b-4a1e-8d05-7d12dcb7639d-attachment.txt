@@ -1,0 +1,5 @@
+INFO     root:conftest.py:93 Started adb logcat for test case: test_login_email_flow, log path: c:\Users\Administrator\Desktop\APP_UI_AUTO\testCase\testApp\login\logs\device_logs\test_login_email_flow.log
+INFO     root:adbOperation.py:40 Successfully connected to the device!
+WARNING  root:elementOption.py:275 传入的元素是list类型，转换为元组
+INFO     root:elementOption.py:113 Clicking at coordinates: (0.576, 0.705)
+INFO     root:conftest.py:119 Stopped adb logcat for test case: test_login_email_flow

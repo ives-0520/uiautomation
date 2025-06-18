@@ -55,13 +55,18 @@ class ElementOption():
         :param delay: 每次重试间隔秒数，默认0.5秒
         :return: 定位到的元素对象，如果未找到则返回None；
         """
+
         for attempt in range(retries):
             try:
-                el_obj = self.device(**element)  # 使用传入的定位信息查找元素
+                if isinstance(element, str) and '//' in element:
+                    el_obj = self.device.xpath(element)
+                else:
+                    el_obj = self.device(**element)  # 使用传入的定位信息查找元素
+                # el_obj = self.device(**element)  # 使用传入的定位信息查找元素
                 # logging.info(f"Element loaded successfully: {el_obj.info}")
                 return el_obj  # 返回找到的元素对象
             except Exception as e:
-                logging.error(f"Element load false (attempt {attempt+1}/{retries}): {e}")
+                logging.error(f"{element}Element load false (attempt {attempt+1}/{retries}): {e}")
                 time.sleep(delay)
         return None
 

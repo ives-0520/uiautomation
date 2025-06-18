@@ -1,0 +1,7 @@
+INFO     root:conftest.py:93 Started adb logcat for test case: test_recharge_flow[0609@ipwangxin.cn-123456-1158472753844023], log path: c:\Users\Administrator\Desktop\APP_UI_AUTO\testCase\testApp\recharge\logs\device_logs\test_recharge_flow[0609@ipwangxin.cn-123456-1158472753844023].log
+INFO     root:adbOperation.py:40 Successfully connected to the device!
+WARNING  root:elementOption.py:280 传入的元素是list类型，转换为元组
+INFO     root:elementOption.py:118 Clicking at coordinates: (0.576, 0.705)
+INFO     httpx:_client.py:1025 HTTP Request: POST https://ark.cn-beijing.volces.com/api/v3/chat/completions "HTTP/1.1 200 OK"
+INFO     root:test_obj_recharge.py:42 充值结果断言: 界面显示“10031:Invalid Recharge Card.”，表明充值卡无效，充值未成功。
+INFO     root:conftest.py:119 Stopped adb logcat for test case: test_recharge_flow[0609@ipwangxin.cn-123456-1158472753844023]

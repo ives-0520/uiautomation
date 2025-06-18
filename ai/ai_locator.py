@@ -55,7 +55,36 @@ class ImageLocator:
         # logging.info(f"AI定位返回信息: {response}")
         return response.choices[0].message.content
     
-
+    def ai_assert(self, image_path, prompt):
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"File not found: {image_path}")
+        with open(image_path, "rb") as f:
+            base64_data = base64.b64encode(f.read()).decode("utf-8")
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{base64_data}"
+                            },
+                        },
+                        # {"type": "text", "text": "查找并返回"+prompt+"按钮相对于图片的等比例的元素定位（x，y）坐标，格式固定为(x,y),x，y均为小于1的数"},
+                        {
+                            "type": "text", 
+                            "text":f"""
+                            【任务指令】{prompt}    
+                            """
+                        }
+                    ],
+                }
+            ],
+        )
+        # logging.info(f"AI定位返回信息: {response}")
+        return response.choices[0].message.content
 
 
     def extract_relative_coordinates(self,ai_response: str) -> tuple:

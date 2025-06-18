@@ -1,0 +1,9 @@
+INFO     root:conftest.py:93 Started adb logcat for test case: test_recharge_flow, log path: c:\Users\Administrator\Desktop\APP_UI_AUTO\testCase\testApp\recharge\logs\device_logs\test_recharge_flow.log
+INFO     root:adbOperation.py:40 Successfully connected to the device!
+ERROR    root:elementOption.py:64 Element load false (attempt 1/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 2/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 3/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 4/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 5/6): xpath is not allowed.
+ERROR    root:elementOption.py:64 Element load false (attempt 6/6): xpath is not allowed.
+INFO     root:conftest.py:119 Stopped adb logcat for test case: test_recharge_flow
