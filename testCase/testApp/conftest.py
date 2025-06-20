@@ -4,6 +4,7 @@
 包括应用初始化、设备连接、数据准备等功能。
 """
 
+import datetime
 import pytest  # 用于测试框架
 import subprocess  # 用于执行系统命令
 from device.adbOperation import ADBOperation  # 导入ADB操作类
@@ -14,6 +15,8 @@ import logging
 import allure  # 导入allure
 import json  # 新增
 import glob  # 新增
+import sys
+from ai.ai_tools import LanguageAI  # 导入AI工具类
 
 log_process = None  # 全局变量，用于保存adb logcat子进程对象
 deviceInfo = readConf().get_device_info()  # 读取设备配置信息
@@ -61,6 +64,9 @@ def update_element_locators_with_ai_result(item=None):
     if updated:
         with open(element_locators_path, 'w', encoding='utf-8') as f:
             json.dump(element_locators, f, ensure_ascii=False, indent=4)
+        logging.info(f"已自动合并AI识别元素到主元素库: {element_locators_path}")
+
+
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_setup(item):
@@ -70,6 +76,7 @@ def pytest_runtest_setup(item):
     同时设置pytest日志文件handler，输出到 logs/pytest_logs/用例名_pylog.log。
     """
     global log_process
+    
     # 获取当前测试用例文件的目录
     case_dir = os.path.dirname(item.fspath)
     # 构造 logs/device_logs 目录
@@ -81,6 +88,16 @@ def pytest_runtest_setup(item):
     # 日志文件路径
     log_file = os.path.join(log_dir, f"{item.name}.log")
     pylog_file = os.path.join(pylog_dir, f"{item.name}_pylog.log")
+
+    # 配置pytest日志文件handler
+    logger = logging.getLogger()
+    for h in logger.handlers[:]:
+        if isinstance(h, logging.FileHandler):
+            logger.removeHandler(h)
+    file_handler = logging.FileHandler(pylog_file, mode='w', encoding="utf-8")
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", "%Y-%m-%d %H:%M:%S")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
    
     # 清空设备上的logcat日志
     subprocess.run(["adb", "-s", deviceName, "logcat", "-c"], check=True)
@@ -91,15 +108,12 @@ def pytest_runtest_setup(item):
         stderr=subprocess.STDOUT
     )
     logging.info(f"Started adb logcat for test case: {item.name}, log path: {log_file}")
-    # 配置pytest日志文件handler（追加写入模式）
-    logger = logging.getLogger()
-    for h in logger.handlers[:]:
-        if isinstance(h, logging.FileHandler):
-            logger.removeHandler(h)
-    file_handler = logging.FileHandler(pylog_file, mode='w', encoding="utf-8")
-    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", "%Y-%m-%d %H:%M:%S")
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    
+    
+   
+
+
+
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_teardown(item, nextitem):
@@ -107,11 +121,7 @@ def pytest_runtest_teardown(item, nextitem):
     在每个测试用例结束后停止 adb logcat，并移除pytest日志文件handler。
     """
     global log_process
-    logger = logging.getLogger()
-    # 移除所有 FileHandler（只移除本次加的）
-    for h in logger.handlers[:]:
-        if isinstance(h, logging.FileHandler):
-            logger.removeHandler(h)
+    
     
     if log_process:
         log_process.terminate()  # 终止adb logcat进程
@@ -124,37 +134,74 @@ def pytest_runtest_teardown(item, nextitem):
         if os.path.exists(log_file):
             with open(log_file, "rb") as f:
                 allure.attach(f.read(), name=f"logcat_{item.name}", attachment_type=allure.attachment_type.TEXT)
-    # 新增：用例结束后自动合并ai_result到element_locators
-    try:
-        update_element_locators_with_ai_result(item)
-    except Exception as e:
-        logging.warning(f"自动合并AI定位信息失败: {e}")
+    
+    logger = logging.getLogger()
+    # 移除所有 FileHandler
+    for h in logger.handlers[:]:
+        if isinstance(h, logging.FileHandler):
+            logger.removeHandler(h)
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    # 用于用例失败时自动截图并上传allure
+   
     outcome = yield
     rep = outcome.get_result()
+    # 用例成功后自动合并ai_result到element_locators
+    if rep.when == "call" and rep.passed:
+        try:
+            update_element_locators_with_ai_result(item)
+        except Exception as e:
+            logging.warning(f"自动合并AI定位信息失败: {e}")
+
+
+    # 用于用例失败时自动截图并上传allure
     if rep.when == "call" and rep.failed:
-            try:
-                import tempfile
-                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
-                    tmp_path = tmpfile.name
-                adb_path = f"/sdcard/pytest_fail_{item.name}.png"
-                # 截图到设备
-                subprocess.run(["adb", "-s", deviceName, "shell", "screencap", "-p", adb_path], check=True)
-                # 拉取到本地
-                subprocess.run(["adb", "-s", deviceName, "pull", adb_path, tmp_path], check=True)
-                # 删除设备上的截图
-                subprocess.run(["adb", "-s", deviceName, "shell", "rm", adb_path], check=True)
-                if os.path.exists(tmp_path):
-                    with open(tmp_path, 'rb') as f:
-                        allure.attach(f.read(), name=f"adb_screenshot_{item.name}", attachment_type=allure.attachment_type.PNG)
-                    os.remove(tmp_path)
-                else:
-                    logging.warning("adb截图失败: 未生成图片")
-            except Exception as e:
-                logging.warning(f"adb截图失败: {e}")
+
+        error_info = {
+            "error_type": str(call.excinfo.type),  # 异常类型
+            "error_message": str(call.excinfo.value),  # 错误信息
+            "error_traceback": str(call.excinfo.getrepr()),  # 错误回溯信息
+        }
+        # 写入到测试用例对应的pytest日志文件
+        case_dir = os.path.dirname(item.fspath)
+        pylog_dir = os.path.join(case_dir, "logs", "pytest_logs")
+        pylog_file = os.path.join(pylog_dir, f"{item.name}_pylog.log")
+        with open(pylog_file, "a", encoding="utf-8") as f:
+            f.write("\n[ERROR_INFO]\n")
+            f.write(json.dumps(error_info, ensure_ascii=False, indent=4))
+            f.write("\n")
+
+
+
+        analyze_log_and_suggest_result = LanguageAI().analyze_log_and_suggest(pylog_file)
+        if analyze_log_and_suggest_result:
+            allure.attach(
+            analyze_log_and_suggest_result,
+            name=f"AI日志分析建议_{item.name}",
+            attachment_type=allure.attachment_type.TEXT
+            )
+       
+
+        try:
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
+                tmp_path = tmpfile.name
+            adb_path = f"/sdcard/pytest_fail_{item.name}.png"
+            # 截图到设备
+            subprocess.run(["adb", "-s", deviceName, "shell", "screencap", "-p", adb_path], check=True)
+            # 拉取到本地
+            subprocess.run(["adb", "-s", deviceName, "pull", adb_path, tmp_path], check=True)
+            # 删除设备上的截图
+            subprocess.run(["adb", "-s", deviceName, "shell", "rm", adb_path], check=True)
+            if os.path.exists(tmp_path):
+                with open(tmp_path, 'rb') as f:
+                    allure.attach(f.read(), name=f"用例执行失败截图_{item.name}", attachment_type=allure.attachment_type.PNG)
+                os.remove(tmp_path)
+            else:
+                logging.warning("adb截图失败: 未生成图片")
+        except Exception as e:
+            logging.warning(f"adb截图失败: {e}")
+        
    
 
 @pytest.fixture
@@ -188,7 +235,7 @@ def app_init():
 
     # 测试完成后清理工作
     # 清除应用数据
-    subprocess.run("adb -s {} shell pm clear {} ".format(deviceName, app_packageName), shell=True, check=True)
+    # subprocess.run("adb -s {} shell pm clear {} ".format(deviceName, app_packageName), shell=True, check=True)
     # 停止应用
     app.stopApp()
 
@@ -199,6 +246,8 @@ def pytest_sessionfinish(session, exitstatus):
     """
     import subprocess
     import shutil
+
+
     result_dir = os.path.abspath("report/allure-results")
     logging.info(f"Allure 结果目录: {result_dir}")
 

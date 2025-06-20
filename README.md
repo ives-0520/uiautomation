@@ -10,6 +10,25 @@
 - **AI驱动的元素库自动维护**：AI识别的元素定位结果可自动合并到主元素库，实现元素库的动态扩展和自我进化，减少人工维护成本。
 - **AI辅助用例生成与自然语言脚本**：支持基于AI的自然语言用例描述、自动生成异常场景测试用例，推动自动化测试向“零代码”与“智能化”演进。
 - **AI执行自然语言脚本**：支持AI直接运行自然语言脚本，并输出测试报告
+- **AI分析日志**：支持AI分析pytest测试用例执行的日志，溯源报错原因并给出解决方案
+
+## 查看测试报告
+allure open report\allure-report
+
+## 自然语言测试用例的执行方法
+command prompt
+1. 进入AI目录：
+   ```bash
+   cd ai
+   ```
+2. 执行自然语言测试用例：
+   ```bash
+   npx tsx ai_excute_midscene.ts
+   ```
+
+# 大模型管理平台
+https://console.volcengine.com/ark/region:ark+cn-beijing/usageTracking
+
 ## 项目结构
 
 ```
@@ -81,7 +100,7 @@ APP_UI_AUTO\
 
 ## 自动化流程说明
 
-1. **录制操作**：通过运行`record/record_login.py`开启录制，生成uiautomator2格式的自动化脚本。
+1. **录制操作**：通过运行`record/start_record.py`开启录制，生成uiautomator2格式的自动化脚本。
 
 **说明：** 以下所有流程均通过`提示词工程（Prompt Engineering）`驱动AI自动完成，无需手动编写脚本。**在使用提示词工程时，请将提示词中的文件名或方法名修改为你实际想要操作的名字，以确保生成的代码符合你的需求。**
 
@@ -118,19 +137,3 @@ APP_UI_AUTO\
    - **pytest用例生成**：根据`nature_xxx.py`中的异常测试用例，自动生成对应的pytest方法，并添加到`testCase/testApp/test_obj_xxx.py`中。所有元素定位和操作方法均调用`page_obj/obj_xxx.py`中的内容，实现异常场景的自动化验证。
 
 
-## 查看测试报告
-allure open report\allure-report
-
-## 自然语言测试用例的执行方法
-
-1. 进入AI目录：
-   ```bash
-   cd ai
-   ```
-2. 执行自然语言测试用例：
-   ```bash
-   npx tsx ai_excute_midscene.ts
-   ```
-
-# 大模型管理平台
-https://console.volcengine.com/ark/region:ark+cn-beijing/usageTracking

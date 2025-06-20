@@ -1,0 +1,17 @@
+{
+  "et_recharge_code": {
+    "v2": {
+      "ai": {
+        "description": "用于输入续费代码的文本输入框，显示占位符文本“Renewal Code”",
+        "locator": [
+          0.5,
+          0.457
+        ],
+        "text": "Renewal Code",
+        "element_type": "文本框",
+        "confidence": 0.9,
+        "relation": "位于“Use recharge code”说明文字下方、“Confirm”按钮上方，被包含在中间深色卡片区域内"
+      }
+    }
+  }
+}

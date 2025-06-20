@@ -1,0 +1,17 @@
+{
+  "et_recharge_code": {
+    "v2": {
+      "ai": {
+        "description": "用于输入续费代码的文本输入框，边框为绿色，内部显示提示文字“Renewal Code”",
+        "locator": [
+          0.5,
+          0.457
+        ],
+        "text": "Renewal Code",
+        "element_type": "文本框",
+        "confidence": 0.9,
+        "relation": "上方相邻“Please check your account and verify your payment”文本，下方相邻“Confirm”按钮，整体包含在“Use recharge code”卡片式区域内"
+      }
+    }
+  }
+}

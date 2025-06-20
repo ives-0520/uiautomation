@@ -95,9 +95,22 @@ class ElementOption():
         :param element: 元素定位信息
         :param text: 要输入的文本
         """
+        
         if not isinstance(text, str):
             text = str(text)
-        self.loadelement(element).send_keys(text)  # 定位元素并输入文本
+        
+        # 如果element是(x, y)格式且x、y都是数字，则直接点击坐标
+        if (
+            isinstance(element, (tuple, list)) and 
+            len(element) == 2 and 
+            all(isinstance(coord, (int, float)) for coord in element)
+        ):
+            
+           
+            x, y = element
+            self.device.send_keys(text)
+        else:
+            self.loadelement(element).send_keys(text)  # 定位元素并输入文本
 
 
     def click_(self, element):
@@ -115,7 +128,7 @@ class ElementOption():
            
             x, y = element
             self.device.click(x, y)
-            logging.info(f"Clicking at coordinates: {element}")
+            # logging.info(f"Clicking at coordinates: {element}")
         else:
             self.loadelement(element).click()
             
@@ -181,6 +194,7 @@ class ElementOption():
         向元素发送回车键
         :param element: 元素定位信息
         """
+        
         self.loadelement(element).send_keys(Keys.ENTER)  # 定位元素并发送回车键
 
     def is_el_exists(self, element, retries=6, delay=1):
@@ -224,11 +238,11 @@ class ElementOption():
         :param prompt: AI定位描述
         :return: 定位到的元素对象，如果未找到则返回None
         """
-        from ai.ai_locator import ImageLocator
+        from ai.ai_tools import ImageAI
         import json
        
-        locator = ImageLocator()
-        ai_result = locator.locate(image_path, prompt)
+        locator = ImageAI()
+        ai_result = locator.ai_locate(image_path, prompt)
         logging.info(f"AI定位返回结果: {ai_result}")
         ai_result_json = locator.format_ai_result(ai_result)
         
@@ -277,7 +291,7 @@ class ElementOption():
         name = element_option.name
         version = element_option.find_version 
         if isinstance(element, (list)):
-            logging.warning("传入的元素是list类型，转换为元组")
+            # logging.warning("传入的元素是list类型，转换为元组")
             return tuple(element)
 
         el = self.loadelement(element)
@@ -299,7 +313,7 @@ class ElementOption():
             case_dir = Path(__file__).parent
         images_dir = case_dir / "images"
         images_dir.mkdir(exist_ok=True)
-        image_path = images_dir / f"ai_fallback_{int(time.time())}.png"
+        image_path = images_dir / f"ai_fallback_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         self.device.screenshot(str(image_path))
         
         logging.info(f"截图已保存，图片地址: {image_path}")

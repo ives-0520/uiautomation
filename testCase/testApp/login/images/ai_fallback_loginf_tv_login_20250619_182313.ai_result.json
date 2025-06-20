@@ -1,0 +1,17 @@
+{
+  "loginf_tv_login": {
+    "v2": {
+      "ai": {
+        "description": "用于提交登录信息以完成登录操作的按钮",
+        "locator": [
+          0.576,
+          0.708
+        ],
+        "text": "Login",
+        "element_type": "按钮",
+        "confidence": 0.9,
+        "relation": "位于“Remember password”复选框、“Reset password”文本下方，属于登录操作区域内的交互组件"
+      }
+    }
+  }
+}

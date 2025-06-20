@@ -1,1 +1,1 @@
-{"total":2,"items":[{"uid":"0145c61f9bce1c58aee338224ade9954","name":"充值功能","statistic":{"failed":3,"broken":1,"skipped":0,"passed":1,"unknown":0,"total":5}},{"uid":"76c1a89e029bf2806c0ddb06b8505b0b","name":"登录功能","statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1}}]}
+{"total":1,"items":[{"uid":"0145c61f9bce1c58aee338224ade9954","name":"充值功能","statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1}}]}
