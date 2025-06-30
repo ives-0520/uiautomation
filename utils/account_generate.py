@@ -1,3 +1,5 @@
+# filepath: c:\Users\Administrator\Desktop\APP_UI_AUTO\utils\account_generate.py
+
 import random
 import string
 import logging

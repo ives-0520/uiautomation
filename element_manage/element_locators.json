@@ -83,11 +83,11 @@
             "traditional": {
                 "description": "登录按钮（登录界面）",
                 "locator": {
-                    "resourceId": "{packagename}:id/loginf_tv_login"
+                    "resourceId": "{packagename}:id/loginf_tv_logi"
                 }
             },
             "ai": {
-                "description": "用于提交登录信息的按钮，显示文本为“Login”",
+                "description": "显示“Login”文字的登录功能按钮",
                 "locator": [
                     0.576,
                     0.708
@@ -95,7 +95,7 @@
                 "text": "Login",
                 "element_type": "按钮",
                 "confidence": 0.9,
-                "relation": "上方相邻密码输入框、“Remember password”复选框等组件，下方相邻“By logging in, you agree with the Terms & Policy”文本组件"
+                "relation": "位于“Remember password”复选框和“Reset password”文本下方，与密码输入框相邻，属于登录功能区域内的组件"
             }
         }
     },

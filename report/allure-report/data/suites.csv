@@ -1,2 +1,3 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","31768","test_recharge_flow[0609@ipwangxin.cn-123456-0032585037122898]","testCase.testApp.recharge","Fri Jun 20 01:29:40 CST 2025","failed","Fri Jun 20 01:30:12 CST 2025","","test_obj_recharge","",""
+"","27291","test_recharge_flow[0609@ipwangxin.cn-123456-0032585037446681]","testCase.testApp.recharge","Tue Jun 24 10:19:48 CST 2025","failed","Tue Jun 24 10:20:15 CST 2025","","test_obj_recharge","",""
+"","17893","test_login_email_flow","testCase.testApp.login","Tue Jun 24 10:14:36 CST 2025","passed","Tue Jun 24 10:14:54 CST 2025","","test_obj_login","",""

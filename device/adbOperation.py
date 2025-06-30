@@ -36,7 +36,7 @@ class ADBOperation:
             # 连接设备
             subprocess.run(["adb", "connect", devicename])
         else:
-            print("Successfully connected to the device!")
+            
             logging.info("Successfully connected to the device!")
 
     def reboot_adb(self):

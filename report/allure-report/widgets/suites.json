@@ -1,1 +1,1 @@
-{"total":1,"items":[{"uid":"979fc3aee5108dc5436c0eddb8da2753","name":"testCase.testApp.recharge","statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1}}]}
+{"total":2,"items":[{"uid":"979fc3aee5108dc5436c0eddb8da2753","name":"testCase.testApp.recharge","statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1}},{"uid":"72db8745ddbdbfb085621431785ad02d","name":"testCase.testApp.login","statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1}}]}
