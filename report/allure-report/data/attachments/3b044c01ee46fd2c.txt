@@ -1,0 +1,3 @@
+INFO     root:conftest.py:112 Started adb logcat for test case: test_login_email_flow, log path: c:\Users\Administrator\Desktop\APP_UI_AUTO\testCase\testApp\login\logs\device_logs\test_login_email_flow.log
+INFO     root:adbOperation.py:40 Successfully connected to the device!
+INFO     root:conftest.py:131 Stopped adb logcat for test case: test_login_email_flow

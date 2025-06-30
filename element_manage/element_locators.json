@@ -1,0 +1,155 @@
+{
+    "v_demo": {
+        "v1": {
+            "traditional": {
+                "description": "v-demo文本元素（APP入口）",
+                "locator": {
+                    "text": "v-demo"
+                }
+            }
+        }
+    },
+    "permission_allow_button": {
+        "v1": {
+            "traditional": {
+                "description": "权限允许按钮（系统弹窗‘允许’按钮）",
+                "locator": {
+                    "resourceId": "com.android.permissioncontroller:id/permission_allow_button"
+                }
+            }
+        }
+    },
+    "account_login_tv2": {
+        "v1": {
+            "traditional": {
+                "description": "账号登录按钮（首页‘账号登录’按钮）",
+                "locator": {
+                    "resourceId": "{packagename}:id/account_login_tv2"
+                }
+            }
+        }
+    },
+    "loginf_et_username": {
+        "v1": {
+            "traditional": {
+                "description": "用户名输入框（登录界面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/loginf_et_username"
+                }
+            }
+        }
+    },
+    "et_pwd": {
+        "v1": {
+            "traditional": {
+                "description": "密码输入框（登录界面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/et_pwd"
+                }
+            }
+        }
+    },
+    "remember_pwd_cb": {
+        "v1": {
+            "traditional": {
+                "description": "记住密码复选框（登录界面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/remember_pwd_cb"
+                }
+            }
+        }
+    },
+    "loginf_tv_login": {
+        "v1": {
+            "traditional": {
+                "description": "登录按钮（登录界面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/loginf_tv_login"
+                }
+            },
+            "ai": {
+                "description": "登录按钮（登录界面）",
+                "locator": [
+                    0.576,
+                    0.708
+                ],
+                "text": "login",
+                "element_type": "按钮",
+                "confidence": 0.95,
+                "relation": "与用户名输入框、密码输入框、记住密码复选框同属登录界面"
+            }
+        },
+        "v2": {
+            "traditional": {
+                "description": "登录按钮（登录界面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/loginf_tv_logi"
+                }
+            },
+            "ai": {
+                "description": "显示“Login”文字的登录功能按钮",
+                "locator": [
+                    0.576,
+                    0.708
+                ],
+                "text": "Login",
+                "element_type": "按钮",
+                "confidence": 0.9,
+                "relation": "位于“Remember password”复选框和“Reset password”文本下方，与密码输入框相邻，属于登录功能区域内的组件"
+            }
+        }
+    },
+    "imageView": {
+        "v1": {
+            "traditional": {
+                "description": "头像图片控件",
+                "locator": {
+                    "resourceId": "{packagename}:id/imageView"
+                }
+            }
+        }
+    },
+    "recharge_recycler_view": {
+        "v1": {
+            "traditional": {
+                "description": "充值入口",
+                "locator": {
+                    "xpath": "//*[@resource-id=\"{packagename}:id/recycler_view\"]/android.widget.LinearLayout[1]"
+                }
+            }
+        }
+    },
+    "et_recharge_code": {
+        "v1": {
+            "traditional": {
+                "description": "充值码输入框（充值页面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/et_recharge_code"
+                }
+            }
+        },
+        "v2": {
+            "ai": {
+                "description": "用于输入续费代码的文本输入框",
+                "locator": [
+                    0.5,
+                    0.45
+                ],
+                "text": "Renewal Code",
+                "element_type": "文本框",
+                "confidence": 0.9,
+                "relation": "上方相邻“Use recharge code”文字及说明文本，下方相邻“Confirm”按钮，整体包含于“Use recharge code”模块内"
+            }
+        }
+    },
+    "recharge_code_confirm": {
+        "v1": {
+            "traditional": {
+                "description": "充值确认按钮（充值页面）",
+                "locator": {
+                    "resourceId": "{packagename}:id/recharge_code_confirm"
+                }
+            }
+        }
+    }
+}
