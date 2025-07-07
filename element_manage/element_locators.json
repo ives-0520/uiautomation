@@ -42,7 +42,7 @@
     "et_pwd": {
         "v1": {
             "traditional": {
-                "description": "密码输入框（登录界面）",
+                "description": "密码输入框",
                 "locator": {
                     "resourceId": "{packagename}:id/et_pwd"
                 }
@@ -148,6 +148,77 @@
                 "description": "充值确认按钮（充值页面）",
                 "locator": {
                     "resourceId": "{packagename}:id/recharge_code_confirm"
+                }
+            }
+        }
+    },
+    
+    "sign_up_tv2": {
+        "v1": {
+            "traditional": {
+                "description": "注册按钮（首页注册入口按钮）",
+                "locator": {
+                    "resourceId": "{packagename}:id/sign_up_tv2"
+                }
+            }
+        }
+    },
+    "layout_email_view": {
+        "v1": {
+            "traditional": {
+                "description": "邮箱输入框布局（注册页面邮箱输入区域）",
+                "locator": {
+                    "xpath": "//*[@resource-id='{packagename}:id/layout_email_view']/android.widget.LinearLayout[1]"
+                }
+            }
+        }
+    },
+    "tv_verify": {
+        "v1": {
+            "traditional": {
+                "description": "发送验证码按钮（注册页面获取邮箱验证码按钮）",
+                "locator": {
+                    "resourceId": "{packagename}:id/tv_verify"
+                }
+            }
+        }
+    },
+    "et_verify_code": {
+        "v1": {
+            "traditional": {
+                "description": "验证码输入框（注册页面邮箱验证码输入框）",
+                "locator": {
+                    "resourceId": "{packagename}:id/et_verify_code"
+                }
+            }
+        }
+    },
+    "resetpwd_tv_submit": {
+        "v1": {
+            "traditional": {
+                "description": "提交按钮（注册页面信息提交按钮）",
+                "locator": {
+                    "resourceId": "{packagename}:id/resetpwd_tv_submit"
+                }
+            }
+        }
+    },
+    "tv_agreement_agree": {
+        "v1": {
+            "traditional": {
+                "description": "同意协议按钮（注册页面用户协议同意按钮）",
+                "locator": {
+                    "resourceId": "{packagename}:id/tv_agreement_agree"
+                }
+            }
+        }
+    },
+    "btn_down": {
+        "v1": {
+            "traditional": {
+                "description": "完成按钮（注册流程最终确认按钮）",
+                "locator": {
+                    "resourceId": "{packagename}:id/btn_down"
                 }
             }
         }
