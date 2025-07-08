@@ -165,7 +165,7 @@ def pytest_runtest_makereport(item, call):
             "error_message": str(call.excinfo.value),  # 错误信息  # Error message
             "error_traceback": str(call.excinfo.getrepr()),  # 错误回溯信息  # Error traceback
         }
-        logging.error(f"用例 {item.name} 错误信息: {error_info}")  # Log error info
+        # logging.error(f"用例 {item.name} 错误信息: {error_info}")  # Log error info
         # 写入到测试用例对应的pytest日志文件  # Write to pytest log file
         case_dir = os.path.dirname(item.fspath)
         pylog_dir = os.path.join(case_dir, "logs", "pytest_logs")
@@ -177,14 +177,14 @@ def pytest_runtest_makereport(item, call):
 
 
 
-        analyze_log_and_suggest_result = LanguageAI().analyze_log_and_suggest(pylog_file)
-        if analyze_log_and_suggest_result:
-            logging.info(f"AI日志分析建议: {analyze_log_and_suggest_result}")  # Log AI suggestion
-            allure.attach(
-            analyze_log_and_suggest_result,
-            name=f"AI日志分析建议_{item.name}",
-            attachment_type=allure.attachment_type.TEXT
-            )
+        # analyze_log_and_suggest_result = LanguageAI().analyze_log_and_suggest(pylog_file)
+        # if analyze_log_and_suggest_result:
+        #     logging.info(f"AI日志分析建议: {analyze_log_and_suggest_result}")  # Log AI suggestion
+        #     allure.attach(
+        #     analyze_log_and_suggest_result,
+        #     name=f"AI日志分析建议_{item.name}",
+        #     attachment_type=allure.attachment_type.TEXT
+        #     )
        
 
         try:

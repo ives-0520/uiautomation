@@ -105,9 +105,9 @@ class ElementOption():
             len(element) == 2 and 
             all(isinstance(coord, (int, float)) for coord in element)
         ):
-            
-           
             x, y = element
+            self.device.send_keys(text)
+        elif isinstance(element, str) and '//' in element:
             self.device.send_keys(text)
         else:
             self.loadelement(element).send_keys(text)  # 定位元素并输入文本
